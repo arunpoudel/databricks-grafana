@@ -20,6 +20,19 @@ Read the full [Grafana Data Source Backend Plugin Documentation](https://mullerp
 For the latest version of the plugin the following requirements need to be met:
 - Grafana Version >= 10.4.1
 
+The Linux/amd64 backend binary includes the Statement Execution API support needed
+for Databricks Lakehouse Real-Time warehouses. The driver uses its regular Thrift
+backend by default and automatically switches to Statement Execution API when a
+Real-Time warehouse requires it. To build this backend manually, use a Linux/amd64
+host with a C toolchain:
+
+```bash
+CGO_ENABLED=1 go build -tags=arrow_json_stdlib,databricks_kernel \
+  -o dist/gpx_databricks_linux_amd64 ./pkg
+```
+
+The other cross-compiled binaries remain Thrift-only.
+
 If you are using an earlier Grafana version try one of the following Plugin Versions:
 - [v1.1.7](https://github.com/mullerpeter/databricks-grafana/releases/tag/v1.1.7) (Supports Grafana Version >= 7.4.0)
 - [v1.2.9](https://github.com/mullerpeter/databricks-grafana/releases/tag/v1.2.9) (Supports Grafana Version >= 9.1.0)
@@ -28,13 +41,13 @@ If you are using an earlier Grafana version try one of the following Plugin Vers
 
 1. Install the plugin into the grafana plugin folder:
 ```bash
-grafana-cli --pluginUrl https://github.com/mullerpeter/databricks-grafana/releases/latest/download/mullerpeter-databricks-datasource.zip plugins install mullerpeter-databricks-datasource
+grafana-cli --pluginUrl https://github.com/mullerpeter/databricks-grafana/releases/latest/download/arun-databricks-datasource-1.3.8.zip plugins install arun-databricks-datasource
 ```
 or
 ```bash
 cd /var/lib/grafana/plugins/
-wget https://github.com/mullerpeter/databricks-grafana/releases/latest/download/mullerpeter-databricks-datasource.zip
-unzip mullerpeter-databricks-datasource.zip
+wget https://github.com/mullerpeter/databricks-grafana/releases/latest/download/arun-databricks-datasource-1.3.8.zip
+unzip arun-databricks-datasource-1.3.8.zip
 ```
 
 2. Edit the grafana configuration file to allow unsigned plugins:
@@ -42,7 +55,7 @@ unzip mullerpeter-databricks-datasource.zip
 * macOS：/usr/local/etc/grafana/grafana.ini
 ```ini
 [plugins]
-allow_loading_unsigned_plugins = mullerpeter-databricks-datasource
+allow_loading_unsigned_plugins = arun-databricks-datasource
 ```
 Or with docker
 ```bash
@@ -50,7 +63,7 @@ docker run -d \
 -p 3000:3000 \
 -v "$(pwd)"/grafana-plugins:/var/lib/grafana/plugins \
 --name=grafana \
--e "GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=mullerpeter-databricks-datasource" \
+-e "GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=arun-databricks-datasource" \
 grafana/grafana
 ```
 
@@ -107,7 +120,7 @@ The Datasource configuration can also be done via a YAML file as described [here
 ```yaml
 datasources:
   - name: Databricks
-    type: mullerpeter-databricks-datasource
+    type: arun-databricks-datasource
     isDefault: true
     jsonData:
       hostname: XXX.cloud.databricks.com

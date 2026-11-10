@@ -251,6 +251,11 @@ func parseConnectionSettings(settingsRawJson json.RawMessage) ConnectionSettings
 	connectionSettings.MaxIdleConns = parseInt(connectionSettingsJson.MaxIdleConns, 2)
 	connectionSettings.ConnMaxLifetime = time.Duration(parseInt(connectionSettingsJson.ConnMaxLifetime, 6*3600)) * time.Second
 	connectionSettings.ConnMaxIdleTime = time.Duration(parseInt(connectionSettingsJson.ConnMaxIdleTime, 6*3600)) * time.Second
+	connectionSettings.Retries = parseInt(connectionSettingsJson.Retries, 4)
+	connectionSettings.RetryBackoff = time.Duration(parseInt(connectionSettingsJson.RetryBackoff, 1)) * time.Second
+	connectionSettings.MaxRetryDuration = time.Duration(parseInt(connectionSettingsJson.MaxRetryDuration, 30)) * time.Second
+	connectionSettings.Timeout = time.Duration(parseInt(connectionSettingsJson.Timeout, 0)) * time.Second
+	connectionSettings.MaxRows = parseInt(connectionSettingsJson.MaxRows, 10000)
 
 	return connectionSettings
 }
@@ -342,7 +347,7 @@ func (d *Datasource) Dispose() {
 // The QueryDataResponse contains a map of RefID to the response for each query, and each response
 // contains Frames ([]*Frame).
 func (d *Datasource) QueryData(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
-	log.DefaultLogger.Info("QueryData called", "request", req)
+	log.DefaultLogger.Debug("QueryData called", "queries", len(req.Queries))
 
 	ctx = AddPassTroughTokenToContext(ctx, req.GetHTTPHeader(backend.OAuthIdentityTokenHeaderName))
 
@@ -379,7 +384,7 @@ func (d *Datasource) query(ctx context.Context, pCtx backend.PluginContext, quer
 	// Unmarshal the JSON into our queryModel.
 	var qm queryModel
 
-	log.DefaultLogger.Info("Query Full", "query", query)
+	log.DefaultLogger.Debug("Query Full", "refId", query.RefID)
 	err := json.Unmarshal(query.JSON, &qm)
 	if err != nil {
 		response.Error = err
@@ -422,7 +427,7 @@ func (d *Datasource) query(ctx context.Context, pCtx backend.PluginContext, quer
 		}
 	}
 
-	log.DefaultLogger.Info("Query", "query", queryString)
+	log.DefaultLogger.Debug("Query", "query", queryString)
 
 	frame := data.NewFrame("response")
 
@@ -465,7 +470,7 @@ func AddPassTroughTokenToContext(ctx context.Context, token string) context.Cont
 // datasource configuration page which allows users to verify that
 // a datasource is working as expected.
 func (d *Datasource) CheckHealth(ctx context.Context, req *backend.CheckHealthRequest) (*backend.CheckHealthResult, error) {
-	log.DefaultLogger.Info("CheckHealth called", "request", req)
+	log.DefaultLogger.Debug("CheckHealth called")
 	ctx = AddPassTroughTokenToContext(ctx, req.GetHTTPHeader(backend.OAuthIdentityTokenHeaderName))
 
 	rows, err := d.QueryContext(ctx, "SELECT 1")

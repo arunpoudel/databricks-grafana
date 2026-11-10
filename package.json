@@ -1,5 +1,5 @@
 {
-  "name": "mullerpeter-databricks-datasource",
+  "name": "arun-databricks-datasource",
   "private": true,
   "version": "1.3.8",
   "description": "Databricks SQL Connector",

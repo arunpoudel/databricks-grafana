@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Rename the npm package and Grafana plugin ID to `arun-databricks-datasource`.
+- Stop logging full requests and SQL at info level; fail closed when an OAuth pass-through token is missing.
+- Apply all configured connection retry, timeout, and row-limit settings.
+- Upgrade the Databricks SQL Go driver for Lakehouse Real-Time Statement Execution API support; build the Linux/amd64 backend with the required kernel tag and CGO.
+- Refresh Go dependencies, add vulnerability and Grafana compatibility checks, and include plugin ID and version in release archive names.
+
 ## 1.3.8
 
 - Refactor: User context for oauth token pass-through

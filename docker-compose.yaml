@@ -2,7 +2,7 @@ version: '3.0'
 
 services:
   grafana:
-    container_name: 'mullerpeter-databricks-datasource'
+    container_name: 'arun-databricks-datasource'
     platform: "linux/amd64"
     build:
       context: ./.config
@@ -12,5 +12,5 @@ services:
     ports:
       - 3000:3000/tcp
     volumes:
-      - ./dist:/var/lib/grafana/plugins/mullerpeter-databricks-datasource
+      - ./dist:/var/lib/grafana/plugins/arun-databricks-datasource
       - ./provisioning:/etc/grafana/provisioning
