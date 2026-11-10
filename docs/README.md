@@ -25,6 +25,7 @@ host with a C toolchain:
 
 ```bash
 CGO_ENABLED=1 go build -tags=arrow_json_stdlib,databricks_kernel \
+  -ldflags='-w -s -extldflags "-static"' \
   -o dist/gpx_databricks_linux_amd64 ./pkg
 ```
 

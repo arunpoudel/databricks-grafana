@@ -66,7 +66,7 @@ func Default() error {
 	}
 	sort.Strings(keys)
 
-	ldflags := "-w -s"
+	ldflags := "-w -s -extldflags \"-static\""
 	for _, key := range keys {
 		ldflags += fmt.Sprintf(" -X '%s=%s'", key, flags[key])
 	}
